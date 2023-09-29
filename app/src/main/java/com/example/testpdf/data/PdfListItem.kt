@@ -10,6 +10,7 @@ import java.io.File
 const val TAG = "PdfListItem"
 class PdfListItem(val uri : String,
                   val id:Int = 0,
+                  val fileName:String? = null,
                   val bitmap: Bitmap? = null) {
 
     companion object{
@@ -19,7 +20,7 @@ class PdfListItem(val uri : String,
                 if(it.thumbnailPath!=null){
                     Log.d(TAG,"Bruh? huh?")
                     val myBitmap = BitmapFactory.decodeFile(it.thumbnailPath)
-                    return@map PdfListItem(it.uri,it.id,myBitmap)
+                    return@map PdfListItem(it.uri,it.id,it.fileName,myBitmap)
                 }
 
                 Log.e(TAG,"How we get here?")

@@ -21,8 +21,6 @@ class PdfAppViewModel(pdfRepository: PdfRepository):ViewModel() {
         listOf()
     )
 
-
-
     companion object{
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

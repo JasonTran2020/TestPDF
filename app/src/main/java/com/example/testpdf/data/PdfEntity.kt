@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class PdfEntity(
     val uri : String,
     @PrimaryKey(autoGenerate = true) val id:Int = 0,
+    val fileName :String? = null,
     val thumbnailPath:String? = null
 )
 

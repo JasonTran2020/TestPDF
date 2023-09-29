@@ -44,7 +44,6 @@ fun HomeScreen(modifier: Modifier = Modifier, onItemClick : (pdfItem:PdfListItem
             PdfCard(temp = it,onItemClick,modifier = Modifier.padding(8.dp).clickable { onItemClick(it) })
         }
 
-
     }
 }
 
@@ -59,7 +58,7 @@ fun PdfCard(temp: PdfListItem, onItemClick : (pdfItem:PdfListItem) -> Unit,  mod
                 Image(temp.bitmap.asImageBitmap(),null)
             }
 
-            Text(temp.uri)
+            Text(temp.fileName?: "null", textAlign = TextAlign.Center , style = MaterialTheme.typography.labelLarge )
         }
     }
 }
