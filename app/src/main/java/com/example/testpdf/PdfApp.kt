@@ -66,13 +66,13 @@ fun PdfApp() {
             else{
                 //BUsiness logic? Need to move it somehwere else
                 val render = PdfRenderer(fileDesc)
-                val page = render.openPage(0)
-                val bitMap = Bitmap.createBitmap(page.width,page.height, Bitmap.Config.ARGB_8888)
-                page.render(bitMap,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
-                page.close()
+
                 coroutineScope.launch {
-                    viewModel.insertPdfToDatabase(it,bitMap,context)
+                    viewModel.insertPdfToDatabase(it,context)
                 }
+                //By setting the renderer here, before navigating to the next screen, we gurantee that the next screen will have a renderer to use
+                //THis is honestly not a good idea. Saw some other code and perhaps putting this as a coroutine viewmodel method would be better
+                //But I think this would require changing the ViewPdfScreen to using produceState
                 viewModel.setRenderer(render)
                 navController.navigate(PdfScreens.ViewPDFScreen.name)
             }
