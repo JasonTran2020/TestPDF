@@ -3,6 +3,8 @@ package com.example.testpdf.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.provider.OpenableColumns
@@ -98,22 +100,28 @@ class PdfViewModel(val repository: PdfRepository): ViewModel() {
 
     private suspend fun saveBitmapAsFile(uri: Uri, id:Long, context: Context): String? {
         val fileDesc = context.contentResolver.openFileDescriptor(uri, "r") ?: return null
+        //Open the first page of the pdf and save it into a bitmap first
         val render = PdfRenderer(fileDesc)
         val page = render.openPage(0)
-        val bitMap = Bitmap.createBitmap(page.width,page.height, Bitmap.Config.ARGB_8888)
+        var bitMap = Bitmap.createBitmap(page.width,page.height, Bitmap.Config.ARGB_8888)
         page.render(bitMap,null,null,PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
         page.close()
 
+        //Saving as JPEG has caused a blackground, probably because transparent background are changed to black
+        //When moving to the more limited JPEG format
+        bitMap = convertTransparentBitmapToWhite(bitMap)
+
         val directory = context.getDir("imageDir",Context.MODE_PRIVATE)
         val file = File(directory,"Thumbnail$id.png")
-        if (!file.exists()){
-            withContext(Dispatchers.IO) {
-                val fos = FileOutputStream(file)
-                bitMap.compress(Bitmap.CompressFormat.JPEG,90,fos)
-                fos.flush()
-                fos.close()
-            }
+        //Regardless if the file name already exist, update it to be whatever bitMap we just got back.
+        withContext(Dispatchers.IO) {
+            val fos = FileOutputStream(file)
+            //JPEGs are smaller than PNG, but at the cost of quality. For a thumbnail, quality isn't a huge issue
+            bitMap.compress(Bitmap.CompressFormat.JPEG,90,fos)
+            fos.flush()
+            fos.close()
         }
+
         return file.absolutePath
     }
 
@@ -123,6 +131,26 @@ class PdfViewModel(val repository: PdfRepository): ViewModel() {
                 val application = (this[APPLICATION_KEY] as PdfApplication)
                 PdfViewModel(application.container.pdfRepository)
             }
+        }
+        fun convertTransparentBitmapToWhite(bitmap: Bitmap): Bitmap{
+            //When converting to JPEG to save the thumbnail, the background would be black sometime instead of white like
+            //in the pdf renderer. Seems to be related to the fact that I saved the files as JPEG, and by default, transparent
+            //backgrounds are saved as the color black. Therefore, this funciton will change that to white
+            if (bitmap.hasAlpha()){
+                //Empty bitmap but with the same size
+                val newBitmap = Bitmap.createBitmap(bitmap.width,bitmap.height,bitmap.config)
+                //Build a new canvas and draw in that empty bitmap into it
+                val canvas = Canvas(newBitmap)
+                //Now we fill the canvas with white
+                canvas.drawColor(Color.WHITE)
+                //Then we draw the original bitmap onto it. The documentation online for this method says:
+                //Draw the specified bitmap, with its top/left corner at (x,y), using the specified paint, transformed by the current matrix.
+                //Dunno about what it means matrix, paint essentially means the type of brush. I.e, color and style. We want original, so I guess null works
+                canvas.drawBitmap(bitmap,0f,0f,null)
+                //Now we done
+                return newBitmap
+            }
+            return bitmap
         }
     }
 }
