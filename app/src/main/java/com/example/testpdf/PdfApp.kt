@@ -1,7 +1,6 @@
 package com.example.testpdf
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.net.Uri
 import android.util.Log
@@ -33,9 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.testpdf.ui.HomeScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.testpdf.data.PdfEntity
 import com.example.testpdf.data.PdfListItem
-import com.example.testpdf.ui.PdfViewModel
 import com.example.testpdf.ui.ViewPdfScreen
 import kotlinx.coroutines.launch
 

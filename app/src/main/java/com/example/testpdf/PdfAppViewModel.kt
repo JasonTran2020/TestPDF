@@ -1,6 +1,5 @@
-package com.example.testpdf.ui
+package com.example.testpdf
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -17,8 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.room.util.getColumnIndex
-import com.example.testpdf.PdfApplication
 import com.example.testpdf.data.PdfEntity
 import com.example.testpdf.data.PdfRepository
 import kotlinx.coroutines.Dispatchers
@@ -26,9 +23,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
-const val TAG = "PdfViewModel"
-class PdfViewModel(val repository: PdfRepository): ViewModel() {
 
+class PdfViewModel(val repository: PdfRepository): ViewModel() {
+    val TAG = "PdfViewModel"
     var renderer: PdfRenderer? = null
         private set
     var pageCount = 0
@@ -136,6 +133,7 @@ class PdfViewModel(val repository: PdfRepository): ViewModel() {
             //When converting to JPEG to save the thumbnail, the background would be black sometime instead of white like
             //in the pdf renderer. Seems to be related to the fact that I saved the files as JPEG, and by default, transparent
             //backgrounds are saved as the color black. Therefore, this funciton will change that to white
+            //Function based on one of the lower answers from this: https://stackoverflow.com/questions/31608961/why-bitmap-showing-black-background-in-android
             if (bitmap.hasAlpha()){
                 //Empty bitmap but with the same size
                 val newBitmap = Bitmap.createBitmap(bitmap.width,bitmap.height,bitmap.config)
