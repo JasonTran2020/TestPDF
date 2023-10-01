@@ -21,7 +21,7 @@ import com.example.testpdf.R
 @Composable
 fun ViewPdfScreen(modifier:Modifier = Modifier){
 
-    val viewModel : PdfViewModel = viewModel(factory = PdfViewModel.Factory)
+    val viewModel : ViewPdfViewModel = viewModel(factory = ViewPdfViewModel.Factory)
 
     Column(modifier = modifier){
         val pdfBitmap = viewModel.renderPage()
